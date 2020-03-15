@@ -270,29 +270,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <html><head></head><body><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在初步搭建完hexo之后，就开始想，因为是搭建在自己的服务器上，同时GitHub也会推送一份，以及刚好看到 <font color="red"><strong>七牛云有免费CDN云存储</strong></font> 10G免费，用来当图片之类当静态资源就很不错了。</p>
-<p>当然，在刚开始搭的时候，完全就是人工智能， hexo g、hexo d、qshell推送，然后服务器pull、nginx给个代理做转发，各种一系列的操作。真人工智能是一个愚蠢的事情了。于是转变想法，先开始写一些工具脚本，完成自动化的推送。</p>
-<h1 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h1><ul>
-<li>自动化打包推送</li>
-<li>图片请求地址链接</li>
-</ul>
-<h2 id="打包推送"><a href="#打包推送" class="headerlink" title="打包推送"></a>打包推送</h2><p>这个应该就不用怎么讲了，因为都是静态资源，packagejson加一些请求参数就可以了</p>
-<figure class="highlight"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">"scripts": {</span><br><span class="line">  "build": "hexo generate",</span><br><span class="line">  "clean": "hexo clean",</span><br><span class="line">  "deploy": "hexo deploy",</span><br><span class="line">  "server": "hexo server",</span><br><span class="line">  "d": "hexo clean && hexo g && hexo d && qshell qupload qiniu_conf.json && node sftp_upload.js"</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
-
-<p>简单的写了一个sftp推送的方法，贴出来 sftp_uplopad.js</p>
-<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> Client = <span class="built_in">require</span>(<span class="string">'ssh2-sftp-client'</span>)</span><br><span class="line"><span class="keyword">let</span> sftp = <span class="keyword">new</span> Client()</span><br><span class="line"><span class="keyword">const</span> host = <span class="string">'推送服务器地址'</span></span><br><span class="line"><span class="keyword">const</span> port = <span class="string">'请求端口'</span></span><br><span class="line"><span class="keyword">const</span> username = <span class="string">'登录用户名'</span></span><br><span class="line"><span class="keyword">const</span> pwd = <span class="string">'密码'</span></span><br><span class="line"><span class="keyword">const</span> src = <span class="string">'本地public目录地址'</span></span><br><span class="line"><span class="keyword">const</span> dst = <span class="string">'服务器推送地址'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// sftp推送目录</span></span><br><span class="line">sftp.connect({</span><br><span class="line">    host: host,</span><br><span class="line">    port: port,</span><br><span class="line">    username: username,</span><br><span class="line">    password: pwd</span><br><span class="line">  }).then(<span class="function"><span class="params">()</span> =></span> {</span><br><span class="line">    <span class="keyword">return</span> sftp.uploadDir(src, dst)</span><br><span class="line">  }).then(<span class="function">(<span class="params">data</span>) =></span> {</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'上传完成'</span>)</span><br><span class="line">    sftp.end()</span><br><span class="line">  })</span><br><span class="line">  .catch(<span class="function">(<span class="params">err</span>) =></span> {</span><br><span class="line">    <span class="built_in">console</span>.log(err, <span class="string">'catch error'</span>)</span><br><span class="line">  })</span><br></pre></td></tr></tbody></table></figure>
-
-<h2 id="图床使用"><a href="#图床使用" class="headerlink" title="图床使用"></a>图床使用</h2><ul>
-<li>最外层目录建立资源目录，存放静态资源。</li>
-<li>将该目录上传至七牛云存储</li>
-<li>这部分请求地址修改插件写好直接运行 <strong>npm install hexo-img-prefix</strong> 安装即可</li>
-<li>安装完之后在_config.yml中添加  <figure class="highlight yml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">img_prefix:</span> <span class="string">http://yourserver.com/youraddress</span></span><br></pre></td></tr></tbody></table></figure>
-
-</li>
-</ul>
-<blockquote>
-<p>详情参见 <a href="http://119.3.50.146/hexo%E5%9B%BE%E5%BA%8A%E6%95%99%E7%A8%8B-%E5%90%8C%E6%97%B6%E8%83%BD%E5%A4%9F%E5%9C%A8vscode%E4%B8%AD%E9%A2%84%E8%A7%88/" target="_blank" rel="noopener">痴汉的日常-hexo图床教程</a></p>
-</blockquote></body></html>
+          <html><head></head><body><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/03/auto-push/#more" rel="contents">
@@ -421,7 +399,7 @@
 <p><a href="http://theme-next.iissnan.com/third-party-services.html#comment-system" target="_blank" rel="noopener">Next文档</a></p>
 <p><a href="https://valine.js.org/visitor.html" target="_blank" rel="noopener">Valine文档</a></p>
 <p><a href="http://www.cylong.com/blog/2017/03/26/hexo-next-disqus/" target="_blank" rel="noopener">Disqus集成</a></p>
-</blockquote></body></html>
+</blockquote><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/03/message-board/#more" rel="contents">
@@ -516,7 +494,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <html><head></head><body><p>  上周随着国外疫情影响的爆发，恐慌情绪再度的蔓延，同时还有前期获利盘的了结。全盘进入了大坑的时期，获利很多之后又陷入了之前的自我矛盾。看到了顶没有找到更好的机会，又或者是看到了5G光电的机会。<br></p></body></html>
+          <html><head></head><body><p>  上周随着国外疫情影响的爆发，恐慌情绪再度的蔓延，同时还有前期获利盘的了结。全盘进入了大坑的时期，获利很多之后又陷入了之前的自我矛盾。看到了顶没有找到更好的机会，又或者是看到了5G光电的机会。<br></p><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/03/control-20-03-14/#more" rel="contents">
@@ -611,7 +589,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <html><head></head><body><p>  <img src="http://hiagt.assets.hiagt.cn/assets/control/Xnip2020-03-15_00-50-50.jpg" alt="图"><br>  还是一直很看好科技相关概念股，有人炒价格自然会涨，同时在国网大基建情景下，特高压也是一块很有前景的趋势。手上拿着的康佳有种莫名信念，但是我觉得这种信念是不太对的，自身也深陷这种矛盾。<br></p></body></html>
+          <html><head></head><body><p>  <img src="http://hiagt.assets.hiagt.cn/assets/control/Xnip2020-03-15_00-50-50.jpg" alt="图"><br>  还是一直很看好科技相关概念股，有人炒价格自然会涨，同时在国网大基建情景下，特高压也是一块很有前景的趋势。手上拿着的康佳有种莫名信念，但是我觉得这种信念是不太对的，自身也深陷这种矛盾。<br></p><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/02/control-20-02-28/#more" rel="contents">
@@ -697,7 +675,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <html><head></head><body><p>lalalalallalalablackpiglalal</p></body></html>
+          <html><head></head><body><p>lalalalallalalablackpiglalal</p><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2017/08/Test/#more" rel="contents">
@@ -795,7 +773,7 @@
 <p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
 <h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></tbody></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p></body></html>
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2017/08/hello-world/#more" rel="contents">
@@ -1162,5 +1140,5 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
   <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
 
 
-</body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>
