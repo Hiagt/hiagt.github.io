@@ -1,6 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Docker部署Nginx转发宿主机服务</title>
+    <url>/2020/03/docker-nginx/</url>
+    <content><![CDATA[<html><head></head><body><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>前几天在搭建自己的服务器的时候，想用用Docker试试，方便服务管理，在搭建自己Anki的过程中没有找到相关的Docker包，于是直接就在服务器上跑了Anki，还挂载了一个资源目录，做转发的时候就在想，我用Docker跑是为了什么，我还要把重启目录挂进去，感觉还是比较麻烦。在服务数量不多的时候不如直接跑来的方便。。</p>
+<p>由于我用的是CentOS，所以以下都以CentOS都视角来讲述</p>
+<h1 id="Docker安装"><a href="#Docker安装" class="headerlink" title="Docker安装"></a>Docker安装</h1><p>先看看服务器上是否有相关源</p>
+<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> yum search docker</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>如果没有都话先添加</p>
+<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo yum-config-manager \</span></span><br><span class="line">    --add-repo \</span><br><span class="line">    https://mirrors.ustc.edu.cn/docker-ce/linux/centos/docker-ce.repo</span><br></pre></td></tr></tbody></table></figure>
+
+<p>更新yum源缓存，并安装docker</p>
+<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo yum makecache fast</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo yum install docker-ce</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>启动docker</p>
+<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl start docker</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>测试下docker是否运行成功</p>
+<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run hello-world</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Unable to find image 'hello-world:latest' locally</span><br><span class="line">Trying to pull repository docker.io/library/hello-world ... </span><br><span class="line"></span><br><span class="line">latest: Pulling from docker.io/library/hello-world</span><br><span class="line">1b930d010525: Pull complete </span><br><span class="line">Digest: sha256:f9dfddf63636d84ef479d645ab5885156ae030f611a56f3a7ac7f2fdd86d7e4e</span><br><span class="line">Status: Downloaded newer image for docker.io/hello-world:latest</span><br><span class="line"></span><br><span class="line">Hello from Docker!</span><br><span class="line">This message shows that your installation appears to be working correctly.</span><br><span class="line"></span><br><span class="line">To generate this message, Docker took the following steps:</span><br><span class="line"> 1. The Docker client contacted the Docker daemon.</span><br><span class="line"> 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.</span><br><span class="line">    (amd64)</span><br><span class="line"> 3. The Docker daemon created a new container from that image which runs the</span><br><span class="line">    executable that produces the output you are currently reading.</span><br><span class="line"> 4. The Docker daemon streamed that output to the Docker client, which sent it</span><br><span class="line">    to your terminal.</span><br><span class="line"></span><br><span class="line">To try something more ambitious, you can run an Ubuntu container with:</span><br><span class="line"><span class="meta"> $</span><span class="bash"> docker run -it ubuntu bash</span></span><br><span class="line"></span><br><span class="line">Share images, automate workflows, and more with a free Docker ID:</span><br><span class="line"> https://hub.docker.com/</span><br><span class="line"></span><br><span class="line">For more examples and ideas, visit:</span><br><span class="line"> https://docs.docker.com/get-started/</span><br></pre></td></tr></tbody></table></figure>
+
+<p>如果helloword正常运行则表明安装成功</p>
+<h1 id="Nginx安装"><a href="#Nginx安装" class="headerlink" title="Nginx安装"></a>Nginx安装</h1><p>如果需要安装指定版本Nginx的话可以先查看Nginx版本</p>
+<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker search nginx</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>安装nginx</p>
+<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker pull nginx</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>查看本地image</p>
+<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker image ls</span></span><br><span class="line">REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">docker.io/nginx     latest              a1523e859360        2 weeks ago         127 MB</span><br></pre></td></tr></tbody></table></figure>
+<p>可以看到刚pull的nginx的image</p>
+<p>接下来我们开始运行Nginx试一试</p>
+<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run --name <span class="built_in">test</span> -p 8080:80 -d nginx</span></span><br></pre></td></tr></tbody></table></figure>
+<ul>
+<li>–name test: 指定容器名称</li>
+<li>-p 8080:80: 将本地的8080端口映射到docker容器内的80端口</li>
+<li>-d nginx: 后台运行Nginx</li>
+</ul>
+<p>现在我们可以打开浏览器访问一下8080端口，访问成功说明Ngnix就起来了，没有的话可能是防火墙的原因，看看8080端口是不是没打开</p>
+<h1 id="挂载宿主机目录"><a href="#挂载宿主机目录" class="headerlink" title="挂载宿主机目录"></a>挂载宿主机目录</h1><p>由于nginx.conf以及log之类的文件会经常有查看的需求，所以一般将这些文件放在宿主机中，并将这些文件目录地址挂载到docker容器中</p>
+<p>现在我们关闭刚才启动的Nginx</p>
+<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker stop nginx</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后创建想要挂载的目录，以Nginx.conf为例</p>
+<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run --name nginx -p 80:80 \</span></span><br><span class="line">-v /data/nginx/conf/nginx.conf:/etc/nginx/conf/nginx.conf \</span><br><span class="line">-v /data/nginx/conf.d/:/etc/nginx/conf.d \</span><br><span class="line">-v /data/nginx/logs:/var/log/nginx \</span><br><span class="line">-d nginx</span><br></pre></td></tr></tbody></table></figure>
+<p>-v指将宿主机目录挂载到容器中</p>
+<ul>
+<li>使用方式为 -v <strong>宿主目录或文件路径</strong>:<strong>docker容器目录或文件路径</strong></li>
+</ul>
+</body></html>]]></content>
+      <categories>
+        <category>Develop</category>
+        <category>Docker</category>
+      </categories>
+      <tags>
+        <tag>Docker</tag>
+        <tag>Nginx转发</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo自动推送简化工具相关</title>
     <url>/2020/03/auto-push/</url>
     <content><![CDATA[<html><head></head><body><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在初步搭建完hexo之后，就开始想，因为是搭建在自己的服务器上，同时GitHub也会推送一份，以及刚好看到 <font color="red"><strong>七牛云有免费CDN云存储</strong></font> 10G免费，用来当图片之类当静态资源就很不错了。</p>
