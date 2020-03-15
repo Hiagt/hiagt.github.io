@@ -270,7 +270,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <html><head></head><body><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+          <html><head></head><body>前言
+在初步搭建完hexo之后，就开始想，因为是搭建在自己的服务器上，同时GitHub也会推送一份，以及刚好看到 七牛云有免费CDN云存储 10G免费，用来当图片之类当静态资源就很不错了。
+
+当然，在刚开始搭的时候，完全就是人工智能， hexo g、hexo d、qshell推送，然后服务器pull、nginx给个代理做转发，各种一系列的操作。真人工智能是一个愚蠢的事情了。于是转变想法，先开始写一些工具脚本，完成自动化的推送。
+
+解决问题
+ * 自动化打包推送
+ * 图片请求地址链接
+
+打包推送
+这个应该就不用怎么讲了，因为都是静态资源，packagejson加一些请求参数就可以了
+
+1
+2
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/03/auto-push/#more" rel="contents">
@@ -369,37 +383,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <html><head></head><body><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>查看了下next的配置文件以及看了一上午的相关方案和尝试踩坑，目前留言板使用比较多多主要有以下几种方案。</p>
-<ul>
-<li>valine</li>
-<li>Disqus</li>
-<li>畅言</li>
-<li>gitalk</li>
-<li>livere</li>
-</ul>
-<h1 id="valine"><a href="#valine" class="headerlink" title="valine"></a>valine</h1><h2 id="注册Leancloud"><a href="#注册Leancloud" class="headerlink" title="注册Leancloud"></a>注册Leancloud</h2><p><a href="https://leancloud.cn/?source=006ECWQH" target="_blank" rel="noopener">点我注册Leancloud</a></p>
-<p>使用valine的时候评论、阅读统计都是放在Leancloud上的，需要注意的是valine是从 <strong>v1.2.0</strong> 开始支持文章阅读统计</p>
-<p>首先注册创建一个应用，注册完了之后获取注册的appid和appkey</p>
-<h2 id="创建应用获取Appkey"><a href="#创建应用获取Appkey" class="headerlink" title="创建应用获取Appkey"></a>创建应用获取Appkey</h2><p><strong>创建</strong><br><img src="http://hiagt.assets.hiagt.cn/assets/hexo/WX20200315-140412@2x.png" alt="创建"><br><strong>设置</strong>  <strong><em>这个设置真的很难看到</em></strong><br><img src="http://hiagt.assets.hiagt.cn/assets/hexo/WX20200315-141316@2x.png" alt="设置"><br><strong>获取AppID和AppKey</strong><br><img src="http://hiagt.assets.hiagt.cn/assets/hexo/1584253137389.jpg" alt="key"></p>
-<h2 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h2><p>获取到了appid和appkey之后打开 <strong>主题配置文件</strong> 搜索 <strong>valine</strong> 填写相关信息</p>
-<figure class="highlight yml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Valine</span></span><br><span class="line"><span class="comment"># For more information: https://valine.js.org, https://github.com/xCss/Valine</span></span><br><span class="line"><span class="attr">valine:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">appid:</span> <span class="comment"># Your leancloud application appid</span></span><br><span class="line">  <span class="attr">appkey:</span> <span class="comment"># Your leancloud application appkey</span></span><br><span class="line">  <span class="attr">notify:</span> <span class="literal">false</span> <span class="comment"># Mail notifier</span></span><br><span class="line">  <span class="attr">verify:</span> <span class="literal">false</span> <span class="comment"># Verification code</span></span><br><span class="line">  <span class="attr">placeholder:</span> <span class="string">Just</span> <span class="string">go</span> <span class="string">go</span> <span class="comment"># Comment box placeholder</span></span><br><span class="line">  <span class="attr">avatar:</span> <span class="string">mm</span> <span class="comment"># Gravatar style</span></span><br><span class="line">  <span class="attr">guest_info:</span> <span class="string">nick,mail,link</span> <span class="comment"># Custom comment header</span></span><br><span class="line">  <span class="attr">pageSize:</span> <span class="number">10</span> <span class="comment"># Pagination size</span></span><br><span class="line">  <span class="attr">language:</span> <span class="string">zh-cn</span> <span class="comment"># Language, available values: en, zh-cn</span></span><br><span class="line">  <span class="attr">visitor:</span> <span class="literal">true</span> <span class="comment"># Article reading statistic</span></span><br><span class="line">  <span class="attr">comment_count:</span> <span class="literal">true</span> <span class="comment"># If false, comment count will only be displayed in post page, not in home page</span></span><br><span class="line">  <span class="attr">recordIP:</span> <span class="literal">false</span> <span class="comment"># Whether to record the commenter IP</span></span><br><span class="line">  <span class="attr">serverURLs:</span> <span class="comment"># When the custom domain name is enabled, fill it in here (it will be detected automatically by default, no need to fill in)</span></span><br><span class="line">  <span class="comment"># post_meta_order: 0</span></span><br></pre></td></tr></tbody></table></figure>
+          <html><head></head><body>前言
+查看了下next的配置文件以及看了一上午的相关方案和尝试踩坑，目前留言板使用比较多多主要有以下几种方案。
 
-<h2 id="配置安全域名"><a href="#配置安全域名" class="headerlink" title="配置安全域名"></a>配置安全域名</h2><p>到这里刷新你的页面叭！你就可以看到留言板了哦！！但是一定要记得 <font color="#00dddd"><strong>到安全中心绑定安全域名</strong></font><br><img src="http://hiagt.assets.hiagt.cn/assets/hexo/WX20200315-143644@2x.png" alt="安全域名"></p>
-<h2 id="阅读统计"><a href="#阅读统计" class="headerlink" title="阅读统计"></a>阅读统计</h2><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Valine({</span><br><span class="line">    el:<span class="string">'#vcomments'</span>,</span><br><span class="line">    ...</span><br><span class="line">    visitor: <span class="literal">true</span> <span class="comment">// 阅读量统计</span></span><br><span class="line">})</span><br></pre></td></tr></tbody></table></figure>
+ * valine
+ * Disqus
+ * 畅言
+ * gitalk
+ * livere
 
-<blockquote>
-<p>如果开启了 <strong>阅读量统计</strong>，Valine <strong>会自动检测</strong> leancloud 应用中是否存在 <strong>Counter</strong> 类，如果不存在 <strong>会自动创建</strong>，无需手动创建~</p>
-<p>Valine会自动查找页面中 <strong>class</strong> 值为 <strong>leancloud_visitors</strong> 的元素，获取其 <strong>id</strong> 为查询条件。并将得到的值填充到其 <strong>class</strong> 的值为 <strong>leancloud-visitors-count</strong> 的子元素里：</p>
-</blockquote>
-<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"><!-- id 将作为查询条件 --></span></span><br><span class="line"><span class="tag"><<span class="name">span</span> <span class="attr">id</span>=<span class="string">"<Your/Path/Name>"</span> <span class="attr">class</span>=<span class="string">"leancloud_visitors"</span> <span class="attr">data-flag-title</span>=<span class="string">"Your Article Title"</span>></span></span><br><span class="line">    <span class="tag"><<span class="name">em</span> <span class="attr">class</span>=<span class="string">"post-meta-item-text"</span>></span>阅读量 <span class="tag"></<span class="name">em</span>></span></span><br><span class="line">    <span class="tag"><<span class="name">i</span> <span class="attr">class</span>=<span class="string">"leancloud-visitors-count"</span>></span>1000000<span class="tag"></<span class="name">i</span>></span></span><br><span class="line"><span class="tag"></<span class="name">span</span>></span></span><br></pre></td></tr></tbody></table></figure>
+valine
+注册Leancloud
+点我注册Leancloud
 
-<p>如果你看到这里没看懂的话，那没关系。<strong>回到valine的配置文件吧</strong>！聪明的你肯定就明白了，现在的新版本只用在配置文件里把 <strong>visitor</strong> 改成true就行了。</p>
-<blockquote>
-<p><strong>参考</strong></p>
-<p><a href="http://theme-next.iissnan.com/third-party-services.html#comment-system" target="_blank" rel="noopener">Next文档</a></p>
-<p><a href="https://valine.js.org/visitor.html" target="_blank" rel="noopener">Valine文档</a></p>
-<p><a href="http://www.cylong.com/blog/2017/03/26/hexo-next-disqus/" target="_blank" rel="noopener">Disqus集成</a></p>
-</blockquote><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+使用valine的时候评论、阅读统计都是放在Leancloud上的，需要注意的是valine是从 v1.2.0 开始支持文章阅读统计
+
+首先注册创建一个应用，注册完了之后获取注册的appid和appkey
+
+创建应用获取Appkey
+创建
+
+设置 这个设置真的很难看到
+
+获取AppID和AppKey
+
+
+修改配置文件
+获取<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/03/message-board/#more" rel="contents">
@@ -494,7 +504,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <html><head></head><body><p>  上周随着国外疫情影响的爆发，恐慌情绪再度的蔓延，同时还有前期获利盘的了结。全盘进入了大坑的时期，获利很多之后又陷入了之前的自我矛盾。看到了顶没有找到更好的机会，又或者是看到了5G光电的机会。<br></p><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+          <html><head></head><body>上周随着国外疫情影响的爆发，恐慌情绪再度的蔓延，同时还有前期获利盘的了结。全盘进入了大坑的时期，获利很多之后又陷入了之前的自我矛盾。看到了顶没有找到更好的机会，又或者是看到了5G光电的机会。
+
+ 还是执着于此。基本收获三个跌停，浮盈基本打空。就像之前说的那样，情感难以控制，收获利润才最重要的，也不能因为有盈利就锁仓无所谓。跟钱过不去挺尴尬的。
+
+ 接下来感觉还是会锁仓，除非是跌到成本线，不过我觉得可能不太会，下周应该是一个震荡行情了。寻找场外机会吧，5G来临的感觉让我仿佛站在了13-15的封口浪尖。那个时候4G兴起，光电、通信设备、通信基建、4G相关概念疯涨。5倍-10倍常有。那波牛市究竟是因<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/03/control-20-03-14/#more" rel="contents">
@@ -589,7 +603,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <html><head></head><body><p>  <img src="http://hiagt.assets.hiagt.cn/assets/control/Xnip2020-03-15_00-50-50.jpg" alt="图"><br>  还是一直很看好科技相关概念股，有人炒价格自然会涨，同时在国网大基建情景下，特高压也是一块很有前景的趋势。手上拿着的康佳有种莫名信念，但是我觉得这种信念是不太对的，自身也深陷这种矛盾。<br></p><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+          <html><head></head><body>还是一直很看好科技相关概念股，有人炒价格自然会涨，同时在国网大基建情景下，特高压也是一块很有前景的趋势。手上拿着的康佳有种莫名信念，但是我觉得这种信念是不太对的，自身也深陷这种矛盾。
+
+ 获利了结，价格回调。其实从上周五没有封死就应该看出来应该出掉等待获利了结的调整，下跌回落没有出掉也有有利润可以死扛的想法，但是好在及时的纠正了错误的思想，但是又掉入了另外一个坑，不期望自己的资金有空闲时刻，期望时刻都可以增长。比较草率的调仓，看到情况不对没有及时止损，扩大了损失。同时已经确认要调仓低位买入康佳时还是在止损卖出的时候犹豫了。犹豫的原因是因为想多卖一毛钱，导致调仓买入成本增加4个点，这挺致命的。
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/02/control-20-02-28/#more" rel="contents">
@@ -675,7 +692,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <html><head></head><body><p>lalalalallalalablackpiglalal</p><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+          <html><head></head><body>lalalalallalalablackpiglalal<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2017/08/Test/#more" rel="contents">
@@ -761,19 +778,23 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <html><head></head><body><p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></tbody></table></figure>
+          <html><head></head><body>Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
 
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></tbody></table></figure>
+Quick Start
+Create a new post
+1
 
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></tbody></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></tbody></table></figure>
+$ hexo new "My New Post"
 
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
+
+More info: Writing
+
+Run server
+1
+
+
+$ hexo s<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2017/08/hello-world/#more" rel="contents">
